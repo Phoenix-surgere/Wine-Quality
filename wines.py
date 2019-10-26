@@ -23,16 +23,15 @@ white_wine['color'] = 0; red_wine['color'] = 1
 wines = pd.concat([red_wine, white_wine], axis=0, ignore_index=True)
 wines=wines.reindex(np.random.permutation(wines.index)).reset_index(drop=True)
 
-#plt.style.use('dark_background')
+plt.style.use('dark_background')
 
 #Initial EDA - NA values and very basic info
-#print(wines.isna().sum())
-#print(wines.info())
+print(wines.isna().sum())
+print(wines.info())
 print(wines.quality.describe()) #mean of quality around 5.8
 print(wines.quality.unique())  #Unique qualities
-#wines['quality_label'] = wines.quality.apply(lambda q: 'low' if q <= 5 else 'medium' if q <= 7 else 'high')
 print(wines.quality.value_counts())
-"""
+
 wines.quality.value_counts().plot(kind='bar', title='Quality Distribution'); plt.show()
 wines.quality.value_counts().plot.pie(autopct='%1.1f%%', figsize=(8,6)); plt.show()
 
@@ -48,7 +47,9 @@ sns.boxplot(x='quality', y='pH', data=wines); plt.show()
 sns.boxplot(x='quality', y='citric acid', data=wines); plt.show()
 sns.boxplot(x='quality', y='density', data=wines); plt.show()
 
-#Dimension reduction
+#Need to create benchmark - perhaps naively only predict most frequent class? 
+
+#Dimension reduction vs w/out Dimension reduction
 from helper_funcs import model_reduce, plot_roc_auc, plot_precision_recall,fit_metrics
 from sklearn.model_selection import train_test_split as tts
 from sklearn.preprocessing import StandardScaler as SS
@@ -67,7 +68,6 @@ from sklearn.linear_model import LogisticRegression as LR
 import xgboost as xgb
 from sklearn.metrics import r2_score
 
-#y_test = y_test.apply(lambda q: 5 if q <= 5 else 6 if q <= 7 else 7)
 logit = LR(random_state=seed,solver='lbfgs',max_iter=300, multi_class='auto')
 rf = RFC(n_estimators=250, random_state=seed)
 gb = GBC(n_estimators=250, random_state=seed)
@@ -86,15 +86,15 @@ rfclf.fit(X_train, y_train)
 rf_preds = rfclf.predict(X_test)
 print(r2_score(y_test, rf_preds))
 
-#for model in models:
-#    masks.append(model_reduce(model, 5, X_train, y_train))
-#
-#votes = np.sum(masks, axis=0)
-#print(dict(zip(X_train.columns,votes)))
-#meta_mask = votes >= 3
-#
-#wines_reduced = wines.loc[:, meta_mask]
-#print(wines_reduced.columns)
+for model in models:
+    masks.append(model_reduce(model, 5, X_train, y_train))
+
+votes = np.sum(masks, axis=0)
+print(dict(zip(X_train.columns,votes)))
+meta_mask = votes >= 3
+
+wines_reduced = wines.loc[:, meta_mask]
+print(wines_reduced.columns)
 
 X_train, X_test, y_train, y_test = tts(wines_reduced, qualities, test_size=0.2,
                                      random_state=seed, stratify=qualities)
@@ -102,8 +102,6 @@ X_train, X_test, y_train, y_test = tts(wines_reduced, qualities, test_size=0.2,
                  
 rfclf = RSCV(rf, rf_distributions, n_iter=80, cv=3, random_state=seed, 
              verbose=1, scoring='f1_micro')
-#fit_metrics(rfclf, X_train, y_train, X_test, y_test, labels=)
 rfclf.fit(X_train, y_train)
 rf_preds_red = rfclf.predict(X_test)
 print(r2_score(y_test, rf_preds_red))
-"""
