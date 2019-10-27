@@ -4,7 +4,6 @@ Created on Tue Oct 22 13:09:03 2019
 
 @author: black
 
-quality: 10 is best
 """
 import numpy as np
 import pandas as pd
@@ -48,7 +47,7 @@ sns.boxplot(x='quality', y='citric acid', data=wines); plt.show()
 sns.boxplot(x='quality', y='density', data=wines); plt.show()
 
 #Need to create benchmark - perhaps naively only predict most frequent class? 
-
+#REMINDER: Take into account large class imbalance - eg accuracy NOT good a metric!
 #Dimension reduction vs w/out Dimension reduction
 from helper_funcs import model_reduce, plot_roc_auc, plot_precision_recall,fit_metrics
 from sklearn.model_selection import train_test_split as tts
