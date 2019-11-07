@@ -46,8 +46,18 @@ sns.boxplot(x='quality', y='pH', data=wines); plt.show()
 sns.boxplot(x='quality', y='citric acid', data=wines); plt.show()
 sns.boxplot(x='quality', y='density', data=wines); plt.show()
 
-#Need to create benchmark - perhaps naively only predict most frequent class? 
-#REMINDER: Take into account large class imbalance - eg accuracy NOT good a metric!
+#Need to create benchmark - perhaps naively only predict most frequent class? -SOLVED: Use sklearn's dummy
+#Confusion matrix not convenient, too many classes, will stick to single number metrics - Need to do that for dim reduced as well?
+from sklearn.dummy import DummyClassifier as DC
+dc = DC(random_state=seed)
+dc.fit(X_train, y_train)
+print(f1(y_test, dc.predict(X_test), average='weighted'))
+print(acc(y_test, dc.predict(X_test)))
+
+
+#REMINDER: Take into account large class imbalance - eg accuracy NOT good a metric! SOLVED - Resampling, F1 score, recall_score
+
+
 #Dimension reduction vs w/out Dimension reduction
 from helper_funcs import model_reduce, plot_roc_auc, plot_precision_recall,fit_metrics
 from sklearn.model_selection import train_test_split as tts
