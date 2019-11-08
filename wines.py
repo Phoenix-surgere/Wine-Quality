@@ -56,6 +56,24 @@ print(acc(y_test, dc.predict(X_test)))
 
 
 #REMINDER: Take into account large class imbalance - eg accuracy NOT good a metric! SOLVED - Resampling, F1 score, recall_score
+#Tactics to be used (compared): group outlier groups into one and upsample them collecticely
+X = pd.concat([X_train, y_train], axis=1)
+print(X.quality.value_counts())
+
+def imp(x):
+    if x <= 4:
+        return 3
+    elif x >= 8:
+        return 9
+    else: 
+        return x
+
+X.quality = X.quality.apply(imp)  
+print(X.quality.value_counts())
+
+terrible = X[X.quality==3]
+good = X[X.quality == 9]
+good_up = resample(good, replace=True, n_samples=550, random_state=seed)
 
 
 #Dimension reduction vs w/out Dimension reduction
